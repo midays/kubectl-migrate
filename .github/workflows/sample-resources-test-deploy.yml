@@ -1,0 +1,42 @@
+name: Sample Resources Test Deploy
+
+on:
+  pull_request:
+    paths:
+      - 'Makefile'
+      - 'sample-resources/**'
+  schedule:
+    - cron: '50 3 * * *'  # Runs at 03:50 UTC daily
+
+jobs:
+  test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Start minikube
+        uses: medyagh/setup-minikube@latest
+        with:
+          kubernetes-version: latest
+
+      - name: Verify minikube status
+        run: |
+          minikube status
+          kubectl cluster-info
+          kubectl get nodes
+
+      - name: Deploy sample resources
+        run: make resources-deploy
+
+      - name: Verify deployments
+        run: |
+          echo "Waiting for deployments to be ready..."
+          # TODO: consider something else that wait with sleep
+          sleep 30
+          kubectl get all --all-namespaces
+
+      - name: Cleanup
+        if: always()
+        run: make resources-destroy || true
