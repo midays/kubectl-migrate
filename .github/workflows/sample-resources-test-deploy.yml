@@ -32,9 +32,6 @@ jobs:
 
       - name: Verify deployments
         run: |
-          echo "Waiting for deployments to be ready..."
-          # TODO: consider something else that wait with sleep
-          sleep 30
           kubectl get all --all-namespaces
 
       - name: Cleanup

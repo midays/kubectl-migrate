@@ -42,6 +42,8 @@ To deploy the application to your Kubernetes cluster, run:
 ./deploy.sh
 ```
 
+The `deploy.sh` script will create the resources and wait until the deployment is ready before returning. This eliminates the need for sleep commands or manual waiting.
+
 Or manually:
 
 ```bash

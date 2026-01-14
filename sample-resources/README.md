@@ -40,9 +40,11 @@ This will execute all `destroy.sh` scripts in the subdirectories.
 
 Each application subdirectory contains:
 - `manifest.yaml` - Kubernetes resource definitions
-- `deploy.sh` - Script to deploy the application
+- `deploy.sh` - Script to deploy the application and wait until resources are available
 - `destroy.sh` - Script to remove the application
 - `README.md` - Application-specific documentation
+
+The `deploy.sh` scripts use `kubectl wait` to ensure deployments are ready before returning, eliminating the need for sleep commands or manual waiting.
 
 To manage applications individually, navigate to the specific application directory and run:
 
