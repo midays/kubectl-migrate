@@ -6,7 +6,7 @@ on:
       - 'Makefile'
       - 'sample-resources/**'
   schedule:
-    - cron: '50 3 * * *'  # Runs at 03:50 UTC daily
+    - cron: '50 3 * * *'
 
 jobs:
   test-deploy:
@@ -16,14 +16,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Start minikube
-        uses: medyagh/setup-minikube@latest
-        with:
-          kubernetes-version: latest
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1
 
-      - name: Verify minikube status
+      - name: Verify cluster status
         run: |
-          minikube status
           kubectl cluster-info
           kubectl get nodes
 
