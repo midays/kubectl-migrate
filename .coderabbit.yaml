@@ -15,11 +15,12 @@ reviews:
   changed_files_summary: true
   
   # Custom instructions for this Kubernetes migration tool
-  instructions: |
-    This is a Kubernetes migration tool. Focus on Kubernetes best practices and Go idioms.
-    Pay special attention to error handling and resource cleanup.
-    Ensure all Kubernetes API calls are properly authenticated and authorized.
-  
+  path_instructions:
+    - path: "**/*"
+      instructions: |
+        This is a Kubernetes migration tool. Focus on Kubernetes best practices and Go idioms.
+        Pay special attention to error handling and resource cleanup.
+        Ensure all Kubernetes API calls are properly authenticated and authorized.
   # Path filters - use ! prefix to exclude paths
   path_filters:
     - "!**/vendor/**"
