@@ -75,26 +75,40 @@ if command -v podman &> /dev/null; then
         # macOS - use podman machine
         echo -e "${YELLOW}Setting up Podman for macOS...${NC}"
         
-        # Check if podman machine exists and is running
-        if ! podman machine list 2>/dev/null | grep -q "Currently running"; then
+        # Find running podman machine using structured output
+        RUNNING_MACHINE=$(podman machine list --format '{{.Name}} {{.Running}}' 2>/dev/null | grep ' true$' | awk '{print $1}' | sed 's/\*$//' | head -n1)
+        
+        if [[ -z "$RUNNING_MACHINE" ]]; then
             echo -e "${YELLOW}No running podman machine detected${NC}"
             
-            # Check if machine exists but is stopped
-            if podman machine list 2>/dev/null | grep -q "podman-machine-default"; then
-                echo -e "${YELLOW}Starting existing podman machine...${NC}"
-                podman machine start
+            # Get the first available machine name (default or first in list)
+            MACHINE_NAME=$(podman machine list --format '{{.Name}}' 2>/dev/null | sed 's/\*$//' | head -n1)
+            
+            if [[ -n "$MACHINE_NAME" ]]; then
+                echo -e "${YELLOW}Starting existing podman machine: $MACHINE_NAME${NC}"
+                podman machine start "$MACHINE_NAME"
+                RUNNING_MACHINE="$MACHINE_NAME"
             else
                 echo -e "${YELLOW}Initializing new podman machine...${NC}"
                 podman machine init
-                podman machine start
+                MACHINE_NAME=$(podman machine list --format '{{.Name}}' 2>/dev/null | sed 's/\*$//' | head -n1)
+                podman machine start "$MACHINE_NAME"
+                RUNNING_MACHINE="$MACHINE_NAME"
             fi
+        else
+            echo -e "${GREEN}Found running podman machine: $RUNNING_MACHINE${NC}"
         fi
         
-        # Get the correct socket path for macOS
-        PODMAN_SOCK=$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}' 2>/dev/null || echo "$HOME/.local/share/containers/podman/machine/qemu/podman.sock")
-        if [[ -S "$PODMAN_SOCK" ]]; then
-            export DOCKER_HOST="unix://$PODMAN_SOCK"
-            echo -e "${GREEN}Using Podman socket: $DOCKER_HOST${NC}"
+        # Get the socket path from the specific running machine
+        if [[ -n "$RUNNING_MACHINE" ]]; then
+            PODMAN_SOCK=$(podman machine inspect "$RUNNING_MACHINE" --format '{{.ConnectionInfo.PodmanSocket.Path}}' 2>/dev/null)
+            
+            if [[ -n "$PODMAN_SOCK" ]] && [[ -S "$PODMAN_SOCK" ]]; then
+                export DOCKER_HOST="unix://$PODMAN_SOCK"
+                echo -e "${GREEN}Using Podman socket from $RUNNING_MACHINE: $DOCKER_HOST${NC}"
+            else
+                echo -e "${YELLOW}Warning: Could not get socket path from machine, podman may still work via default connection${NC}"
+            fi
         fi
         
         # Verify podman is working (after starting machine)
