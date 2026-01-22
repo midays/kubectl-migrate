@@ -81,6 +81,20 @@ kubectl port-forward service/apache-hello-service 8080:80
 
 Then visit `http://localhost:8080` in your browser.
 
+## Validation
+
+To validate that the Apache Hello World application is running correctly, use the `validate.sh` script:
+
+```bash
+./validate.sh
+```
+
+The validation script will:
+1. Start a `kubectl port-forward` to the Apache service (default port 18080)
+2. Perform an HTTP request to the application, check HTTP status
+3. Verify HTML content to contain expected text ("Hello World!" and "Apache HTTPD")
+4. Clean up the port-forward process
+
 ## Cleanup
 
 To remove the application from your cluster, run:

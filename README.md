@@ -28,6 +28,12 @@ Check [sample-resources README](sample-resources) for sample application resourc
 $ make resources-deploy
 ```
 
+Optionally, validate resources in the cluster:
+
+```
+$ make resources-validate
+```
+
 Similarly destroy sample workloads:
 
 ```

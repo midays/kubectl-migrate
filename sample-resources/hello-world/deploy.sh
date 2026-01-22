@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "# Using kubectl context: $(kubectl config current-context)"
+
 kubectl create -f manifest.yaml
 
 echo "Waiting for deployment to be ready..."
