@@ -3,7 +3,7 @@ package file_test
 import (
 	"testing"
 
-	"github.com/konveyor/kubectl-migrate/internal/file"
+	"github.com/konveyor-ecosystem/kubectl-migrate/internal/file"
 )
 
 func TestGetWhiteOutFilePath(t *testing.T) {

@@ -3,8 +3,8 @@ package version
 import (
 	"fmt"
 
-	"github.com/konveyor/kubectl-migrate/internal/buildinfo"
-	"github.com/konveyor/kubectl-migrate/internal/flags"
+	"github.com/konveyor-ecosystem/kubectl-migrate/internal/buildinfo"
+	"github.com/konveyor-ecosystem/kubectl-migrate/internal/flags"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

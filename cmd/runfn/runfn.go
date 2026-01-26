@@ -3,7 +3,7 @@ package runfn
 import (
 	"bytes"
 	"fmt"
-	"github.com/konveyor/kubectl-migrate/internal/flags"
+	"github.com/konveyor-ecosystem/kubectl-migrate/internal/flags"
 	"io"
 	"sigs.k8s.io/kustomize/kyaml/yaml"
 	"strings"

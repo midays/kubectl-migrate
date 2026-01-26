@@ -74,7 +74,7 @@ A kubectl plugin for migrating Kubernetes workloads and their state between clus
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/konveyor/kubectl-migrate.git && cd kubectl-migrate
+git clone https://github.com/konveyor-ecosystem/kubectl-migrate.git && cd kubectl-migrate
 ```
 
 2. Build and install:
@@ -94,7 +94,7 @@ kubectl krew install migrate
 
 ### From Release
 
-Download the appropriate binary for your platform from the [releases page](https://github.com/konveyor/kubectl-migrate/releases) and place it in your `$PATH`.
+Download the appropriate binary for your platform from the [releases page](https://github.com/konveyor-ecosystem/kubectl-migrate/releases) and place it in your `$PATH`.
 
 ## Usage
 
@@ -329,7 +329,7 @@ kubectl migrate apply --export-dir ./transformed
 
 ```bash
 # Clone repository
-git clone https://github.com/konveyor/kubectl-migrate.git
+git clone https://github.com/konveyor-ecosystem/kubectl-migrate.git
 cd kubectl-migrate
 
 # Download dependencies
@@ -369,7 +369,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 ## Support
 
 For questions and support:
-- Open an issue on [GitHub](https://github.com/konveyor/kubectl-migrate/issues)
+- Open an issue on [GitHub](https://github.com/konveyor-ecosystem/kubectl-migrate/issues)
 - Join the [Konveyor community](https://github.com/konveyor/community)
 
 ## Status

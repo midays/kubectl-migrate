@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	transform2 "github.com/konveyor/crane-lib/transform"
-	"github.com/konveyor/kubectl-migrate/internal/flags"
-	"github.com/konveyor/kubectl-migrate/internal/plugin"
+	"github.com/konveyor-ecosystem/kubectl-migrate/internal/flags"
+	"github.com/konveyor-ecosystem/kubectl-migrate/internal/plugin"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

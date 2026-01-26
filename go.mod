@@ -1,4 +1,4 @@
-module github.com/konveyor/kubectl-migrate
+module github.com/konveyor-ecosystem/kubectl-migrate
 
 go 1.24.0
 

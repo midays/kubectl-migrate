@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/konveyor/kubectl-migrate/internal/file"
-	"github.com/konveyor/kubectl-migrate/internal/flags"
+	"github.com/konveyor-ecosystem/kubectl-migrate/internal/file"
+	"github.com/konveyor-ecosystem/kubectl-migrate/internal/flags"
 	imagev1 "github.com/openshift/api/image/v1"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

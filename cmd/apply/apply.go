@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/konveyor/crane-lib/apply"
-	"github.com/konveyor/kubectl-migrate/internal/file"
-	"github.com/konveyor/kubectl-migrate/internal/flags"
+	"github.com/konveyor-ecosystem/kubectl-migrate/internal/file"
+	"github.com/konveyor-ecosystem/kubectl-migrate/internal/flags"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"sigs.k8s.io/yaml"

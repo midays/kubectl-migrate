@@ -3,11 +3,11 @@ package plugin_manager
 import (
 	"os"
 
-	"github.com/konveyor/kubectl-migrate/cmd/plugin-manager/add"
-	"github.com/konveyor/kubectl-migrate/cmd/plugin-manager/list"
-	"github.com/konveyor/kubectl-migrate/cmd/plugin-manager/remove"
-	"github.com/konveyor/kubectl-migrate/internal/flags"
-	"github.com/konveyor/kubectl-migrate/internal/plugin"
+	"github.com/konveyor-ecosystem/kubectl-migrate/cmd/plugin-manager/add"
+	"github.com/konveyor-ecosystem/kubectl-migrate/cmd/plugin-manager/list"
+	"github.com/konveyor-ecosystem/kubectl-migrate/cmd/plugin-manager/remove"
+	"github.com/konveyor-ecosystem/kubectl-migrate/internal/flags"
+	"github.com/konveyor-ecosystem/kubectl-migrate/internal/plugin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

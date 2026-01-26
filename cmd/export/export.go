@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/konveyor/kubectl-migrate/internal/flags"
+	"github.com/konveyor-ecosystem/kubectl-migrate/internal/flags"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	velerov1api "github.com/vmware-tanzu/velero/pkg/apis/velero/v1"

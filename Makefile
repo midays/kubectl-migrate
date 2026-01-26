@@ -20,9 +20,9 @@ GOMOD = $(GOCMD) mod
 
 # Linker flags to inject version info
 LDFLAGS = -ldflags "\
-	-X 'github.com/konveyor/kubectl-migrate/internal/buildinfo.Version=$(VERSION)' \
-	-X 'github.com/konveyor/kubectl-migrate/internal/buildinfo.Commit=$(COMMIT)' \
-	-X 'github.com/konveyor/kubectl-migrate/internal/buildinfo.BuildDate=$(BUILD_DATE)'"
+	-X 'github.com/konveyor-ecosystem/kubectl-migrate/internal/buildinfo.Version=$(VERSION)' \
+	-X 'github.com/konveyor-ecosystem/kubectl-migrate/internal/buildinfo.Commit=$(COMMIT)' \
+	-X 'github.com/konveyor-ecosystem/kubectl-migrate/internal/buildinfo.BuildDate=$(BUILD_DATE)'"
 
 # Platforms for cross-compilation
 PLATFORMS = linux/amd64 linux/arm64 darwin/amd64 darwin/arm64
