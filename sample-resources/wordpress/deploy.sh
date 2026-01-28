@@ -23,7 +23,7 @@ kubectl apply -k ./
 # Wait until deployment is ready and WordPress correctly installed
 echo "Waiting for install mysql, wordpress and install job to be completed..."
 kubectl wait --for=condition=available --timeout=300s deployment/wordpress-mysql
-kubectl wait --for=condition=available --timeout=120s deployment/wordpress
-kubectl wait --for=condition=complete --timeout=120s job.batch/wordpress-install
+kubectl wait --for=condition=available --timeout=300s deployment/wordpress
+kubectl wait --for=condition=complete --timeout=300s job.batch/wordpress-install
 
 #echo "Open with 'minikube service wordpress' or 'kubectl port-forward svc/wordpress 8080:80' and open http://127.0.0.1:8080/ in browser"

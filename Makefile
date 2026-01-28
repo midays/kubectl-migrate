@@ -27,7 +27,7 @@ LDFLAGS = -ldflags "\
 # Platforms for cross-compilation
 PLATFORMS = linux/amd64 linux/arm64 darwin/amd64 darwin/arm64
 
-.PHONY: all build build-all clean test deps install resources-deploy resources-destroy help
+.PHONY: all build build-all clean test deps install resources-deploy resources-destroy resources-validate help
 
 all: build
 
@@ -107,6 +107,8 @@ lint:
 check: fmt vet test
 	@echo "All checks passed!"
 
+###############################################################################
+
 # Deploy sample applications
 # Usage: make resources-deploy [app1 app2 ...]
 # Example: make resources-deploy hello-world
@@ -171,4 +173,80 @@ resources-destroy:
 			fi \
 		done; \
 		echo "All applications destroyed successfully!"; \
+
+# Validate sample applications
+# Usage: make resources-validate [app1 app2 ...]
+# Example: make resources-validate hello-world
+# Example: make resources-validate hello-world wordpress
+# If no arguments provided, validates all applications
+resources-validate:
+	@if [ "$(filter-out $@,$(MAKECMDGOALS))" ]; then \
+		failed=""; \
+		for app in $(filter-out $@,$(MAKECMDGOALS)); do \
+			echo "Validating sample application: $$app..."; \
+			if [ -d "sample-resources/$$app" ]; then \
+				if [ -f "sample-resources/$$app/validate.sh" ]; then \
+					if (cd "sample-resources/$$app" && ./validate.sh); then \
+						echo "Application $$app validated successfully!"; \
+					else \
+						echo "Application $$app validation FAILED!"; \
+						failed="$$failed $$app"; \
+					fi; \
+				else \
+					echo "Error: validate.sh not found in sample-resources/$$app"; \
+					failed="$$failed $$app"; \
+				fi; \
+			else \
+				echo "Error: Directory sample-resources/$$app does not exist"; \
+				failed="$$failed $$app"; \
+			fi; \
+		done; \
+		if [ -n "$$failed" ]; then \
+			echo ""; \
+			echo "Validation FAILED for the following applications:$$failed"; \
+			exit 1; \
+		else \
+			echo "All applications validated successfully!"; \
+		fi \
+	else \
+		echo "Validating all sample applications..."; \
+		failed=""; \
+		for dir in sample-resources/*/; do \
+			if [ -f "$$dir/validate.sh" ]; then \
+				app=$$(basename "$$dir"); \
+				echo "Validating $$app..."; \
+				if (cd "$$dir" && ./validate.sh); then \
+					echo "Application $$app validated successfully!"; \
+				else \
+					echo "Application $$app validation FAILED!"; \
+					failed="$$failed $$app"; \
+				fi; \
+			fi \
+		done; \
+		if [ -n "$$failed" ]; then \
+			echo ""; \
+			echo "Validation FAILED for the following applications:$$failed"; \
+			exit 1; \
+		else \
+			echo "All applications validated successfully!"; \
+		fi \
 	fi
+
+###############################################################################
+
+# Show help
+help:
+	@echo "Available targets:"
+	@echo "  resources-deploy [app1 app2 ...]  - Deploy sample application(s) to Kubernetes cluster"
+	@echo "                                      If app names are specified, deploy only those applications"
+	@echo "                                      If no app names specified, deploy all applications"
+	@echo "                                      Example: make resources-deploy hello-world"
+	@echo "  resources-destroy [app1 app2 ...] - Remove sample application(s) from Kubernetes cluster"
+	@echo "                                      If app names are specified, destroy only those applications"
+	@echo "                                      If no app names specified, destroy all applications"
+	@echo "                                      Example: make resources-destroy hello-world"
+	@echo "  resources-validate [app1 app2 ...] - Validate sample application(s) in Kubernetes cluster"
+	@echo "                                       If app names are specified, validate only those applications"
+	@echo "                                       If no app names specified, validate all applications"
+	@echo "                                       Example: make resources-validate hello-world"
+	@echo "  help                               - Show this help message"

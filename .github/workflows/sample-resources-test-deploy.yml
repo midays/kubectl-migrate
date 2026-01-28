@@ -24,12 +24,24 @@ jobs:
           kubectl cluster-info
           kubectl get nodes
 
+      - name: Validate resources before deployment (should fail)
+        run: |
+          if make resources-validate; then
+            echo "Error: Validation should have failed before deployment"
+            exit 1
+          else
+            echo "Validation failed as expected before deployment"
+          fi
+
       - name: Deploy sample resources
         run: make resources-deploy
 
       - name: Verify deployments
         run: |
           kubectl get all --all-namespaces
+
+      - name: Validate resources after deployment (should pass)
+        run: make resources-validate
 
       - name: Cleanup
         if: always()
