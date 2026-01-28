@@ -45,6 +45,7 @@ func (o *Options) Run() error {
 func NewOptionalsCommand(f *flags.GlobalFlags) *cobra.Command {
 	o := &Options{
 		cobraGlobalFlags: f,
+		globalFlags:      f,
 	}
 	cmd := &cobra.Command{
 		Use:   "optionals",
@@ -65,7 +66,7 @@ func NewOptionalsCommand(f *flags.GlobalFlags) *cobra.Command {
 		PreRun: func(cmd *cobra.Command, args []string) {
 			viper.BindPFlags(cmd.Flags())
 			viper.Unmarshal(&o.Flags)
-			viper.Unmarshal(&o.globalFlags)
+			viper.Unmarshal(o.globalFlags)
 		},
 	}
 

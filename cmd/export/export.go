@@ -171,6 +171,7 @@ func NewExportCommand(streams genericclioptions.IOStreams, f *flags.GlobalFlags)
 
 		IOStreams:        streams,
 		cobraGlobalFlags: f,
+		globalFlags:      f,
 	}
 	cmd := &cobra.Command{
 		Use:   "export",
@@ -190,8 +191,8 @@ func NewExportCommand(streams genericclioptions.IOStreams, f *flags.GlobalFlags)
 		},
 		PreRun: func(cmd *cobra.Command, args []string) {
 			viper.BindPFlags(cmd.Flags())
-			viper.Unmarshal(&o.globalFlags)
-			viper.Unmarshal(&o.configFlags)
+			viper.Unmarshal(o.globalFlags)
+			viper.Unmarshal(o.configFlags)
 			viper.UnmarshalKey("export-dir", &o.exportDir)
 		},
 	}
