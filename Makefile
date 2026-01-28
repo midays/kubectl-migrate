@@ -209,5 +209,3 @@ resources-validate: ## Validate sample application(s) in cluster (optionally spe
 			echo "All applications validated successfully!"; \
 		fi \
 	fi
-
-###############################################################################
