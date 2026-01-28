@@ -102,6 +102,7 @@ func (r *rsyncLogStream) Init() error {
 			n, readErr := podLogStream.Read(buf)
 			if n > 0 {
 				zeroBytes = 0
+				logString = fmt.Sprintf("%s%s", logString, string(buf[:n]))
 			} else {
 				zeroBytes += 1
 			}
@@ -110,16 +111,23 @@ func (r *rsyncLogStream) Init() error {
 			if zeroBytes > 4 {
 				err = io.EOF
 			}
-			logString = fmt.Sprintf("%s%s", logString, string(buf[:n]))
-			if readErr == io.EOF {
-				err = readErr
-				// attempt to get a final status of terminated pod
-				code, finalLogs, e := getFinalPodStatus(clientset, podName, r.pvc.Namespace)
-				if e != nil {
-					err = e
+
+			// Handle read errors
+			if readErr != nil {
+				if readErr == io.EOF {
+					err = readErr
+					// attempt to get a final status of terminated pod
+					code, finalLogs, e := getFinalPodStatus(clientset, podName, r.pvc.Namespace)
+					if e != nil {
+						err = e
+					}
+					r.progress.ExitCode = code
+					logString = finalLogs
+				} else {
+					// Non-EOF error - propagate it and exit
+					r.err <- readErr
+					break
 				}
-				r.progress.ExitCode = code
-				logString = finalLogs
 			}
 			parsedProgress, unparsed := parseRsyncLogs(logString)
 			r.progress.Merge(parsedProgress)
