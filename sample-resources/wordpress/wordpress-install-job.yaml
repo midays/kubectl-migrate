@@ -90,10 +90,13 @@ spec:
                 exit 0
               fi
 
+              # Create an installation kind of unique ID
+              WORDPRESS_SEED_ID=$RANDOM
+
               echo "Running wp core install..."
               wp core install \
                 --url="${WORDPRESS_SITE_URL}" \
-                --title="${WORDPRESS_SITE_TITLE}" \
+                --title="${WORDPRESS_SITE_TITLE} #$WORDPRESS_SEED_ID" \
                 --admin_user="${WORDPRESS_ADMIN_USER}" \
                 --admin_password="${WORDPRESS_ADMIN_PASSWORD}" \
                 --admin_email="${WORDPRESS_ADMIN_EMAIL}" \
@@ -104,7 +107,8 @@ spec:
               wp post create \
                 --post_type=post \
                 --post_status=publish \
-                --post_title="Sample post #$RANDOM" \
+                --post_title="Sample post #$WORDPRESS_SEED_ID" \
                 --post_content="Hello from k8s, this is a random post content: $(openssl rand -base64 200 | tr -cs 'a-zA-Z' ' ' | xargs)"
 
+              echo "WORDPRESS_SEED_ID=$WORDPRESS_SEED_ID"
               echo "Done. WordPress has been installed."

@@ -129,6 +129,34 @@ Then visit `http://127.0.0.1:8080` in your browser.
 
 To access Wordpress admin panel, open `/wp-admin/` path using `admin` username and `WORDPRESS_ADMIN_PASSWORD` from local `.env` file.
 
+## Validation
+
+To validate that the WordPress application is running correctly, use the `validate.sh` script:
+
+```bash
+./validate.sh
+```
+
+The validation script will:
+1. Start a `kubectl port-forward` to the WordPress service (default port 18080)
+2. Perform an HTTP request to the WordPress homepage, check HTTP status
+3. Verify HTML content to contain expected text from the sample post
+4. Clean up the port-forward process
+
+### Advanced Validation (stateful)
+
+To validate a **specific** WordPress deployment by checking the exact sample post seed ID generated during installation:
+
+```bash
+# Extract the seed ID from the wordpress-install job logs
+WORDPRESS_SEED_ID=$(kubectl logs job/wordpress-install | grep WORDPRESS_SEED_ID= | cut -d= -f2)
+
+# Run validation with the specific seed ID
+WORDPRESS_SEED_ID=$WORDPRESS_SEED_ID ./validate.sh
+```
+
+This ensures you're validating the exact WordPress deployment instance.
+
 ## Cleanup
 
 To remove the application from your cluster, run:
