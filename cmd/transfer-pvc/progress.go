@@ -511,12 +511,16 @@ func parseRsyncLogs(rawLogs string) (p *Progress, unprocessedData string) {
 }
 
 func waitForPodRunning(c *kubernetes.Clientset, namespace string, labels map[string]string) (string, error) {
+	// Create a context with timeout to prevent indefinite hanging
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
 	var podName string
-	err := wait.PollUntil(time.Second, func() (done bool, err error) {
+	err := wait.PollUntilContextCancel(ctx, time.Second, true, func(ctx context.Context) (done bool, err error) {
 		listOptions := &client.ListOptions{}
 		client.InNamespace(namespace).ApplyToList(listOptions)
 		client.MatchingLabels(labels).ApplyToList(listOptions)
-		clientPodList, err := c.CoreV1().Pods(namespace).List(context.TODO(), *listOptions.AsListOptions())
+		clientPodList, err := c.CoreV1().Pods(namespace).List(ctx, *listOptions.AsListOptions())
 		if err != nil {
 			return false, err
 		}
@@ -540,7 +544,7 @@ func waitForPodRunning(c *kubernetes.Clientset, namespace string, labels map[str
 			}
 		}
 		return true, nil
-	}, make(<-chan struct{}))
+	})
 	return podName, err
 }
 
