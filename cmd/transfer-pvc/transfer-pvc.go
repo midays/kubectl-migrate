@@ -540,7 +540,7 @@ func getIDsForNamespace(client client.Client, namespace string) (*corev1.Securit
 	if annotationVal, found := ns.Annotations[securityv1.UIDRangeAnnotation]; found {
 		uidBlock, err := openshiftuid.ParseBlock(annotationVal)
 		if err != nil {
-			return nil, nil
+			return nil, fmt.Errorf("failed to parse UID annotation: %w", err)
 		}
 		min := int64(uidBlock.Start)
 		ctx.RunAsUser = &min
@@ -548,7 +548,7 @@ func getIDsForNamespace(client client.Client, namespace string) (*corev1.Securit
 	if annotationVal, found := ns.Annotations[securityv1.SupplementalGroupsAnnotation]; found {
 		uidBlock, err := openshiftuid.ParseBlock(annotationVal)
 		if err != nil {
-			return nil, nil
+			return nil, fmt.Errorf("failed to parse supplemental groups annotation: %w", err)
 		}
 		min := int64(uidBlock.Start)
 		ctx.RunAsGroup = &min
