@@ -320,8 +320,13 @@ func (p *Progress) Status() status {
 			p.TransferPercentage = &int100
 			return succeeded
 		}
+		// Check if transfer failed completely (no data transferred)
+		transferredDataVal := float64(0)
+		if p.TransferredData != nil {
+			transferredDataVal = p.TransferredData.val
+		}
 		if p.TransferredFiles == 0 &&
-			p.TransferredData.val == 0 &&
+			transferredDataVal == 0 &&
 			p.TotalFiles == nil {
 			return failed
 		}
