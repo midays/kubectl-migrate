@@ -690,18 +690,31 @@ func followClientLogs(srcConfig *rest.Config, pvc types.NamespacedName, labels m
 	}
 	defer logReader.Close()
 	stdout, stderr, errChan := logReader.Streams()
+	var err error
 	for {
 		closed := false
 		select {
-		case out := <-stdout:
-			os.Stdout.WriteString(out)
-		case err := <-stderr:
-			os.Stderr.WriteString(err)
-		case e := <-errChan:
-			if e != io.EOF {
-				err = e
+		case out, ok := <-stdout:
+			if !ok {
+				stdout = nil
+			} else {
+				os.Stdout.WriteString(out)
 			}
-			closed = true
+		case errOut, ok := <-stderr:
+			if !ok {
+				stderr = nil
+			} else {
+				os.Stderr.WriteString(errOut)
+			}
+		case e, ok := <-errChan:
+			if !ok {
+				errChan = nil
+			} else {
+				if e != io.EOF {
+					err = e
+				}
+				closed = true
+			}
 		}
 		if err != nil || closed {
 			break
