@@ -122,10 +122,16 @@ func (o *Options) run() error {
 	for _, f := range files {
 		whPath := opts.GetWhiteOutFilePath(f.Path)
 		_, statErr := os.Stat(whPath)
-		if !errors.Is(statErr, os.ErrNotExist) {
+		if statErr == nil {
+			// Whiteout file exists - skip this resource
 			log.Infof("resource file: %v is skipped due to white file: %v", f.Info.Name(), whPath)
 			continue
+		} else if !errors.Is(statErr, os.ErrNotExist) {
+			// Unexpected error (not "file not found") - surface it
+			log.Errorf("error checking whiteout file %v for resource %v: %v", whPath, f.Info.Name(), statErr)
+			return statErr
 		}
+		// statErr is ErrNotExist - whiteout file doesn't exist, process the resource
 
 		// Set doc to the object, only update the file if the transfrom file exists
 		doc, err := f.Unstructured.MarshalJSON()
