@@ -406,7 +406,7 @@ func parseRsyncLogs(rawLogs string) (p *Progress, unprocessedData string) {
 	fileStatsRegex := regexp.MustCompile(`Number of files: (\d+).*reg: ([\d,]+), dir: ([\d,]+)`)
 	finalDataTransferredRegex := regexp.MustCompile(`Total transferred file size: (.*) bytes`)
 	finalFileCountRegex := regexp.MustCompile(`Number of regular files transferred: (.*)`)
-	unprocessedLines := regexp.MustCompile(`.*?\n(.*)$`)
+	unprocessedLines := regexp.MustCompile(`(?s).*\n([^\n]*)$`)
 	// retries
 	retryRegex := regexp.MustCompile(`Syncronization failed. Retrying in \d+ seconds. Retry (\d+)/.*`)
 
@@ -473,7 +473,8 @@ func parseRsyncLogs(rawLogs string) (p *Progress, unprocessedData string) {
 	if matched := unprocessedLines.FindStringSubmatch(rawLogs); len(matched) > 1 {
 		return p, matched[1]
 	}
-	return p, ""
+	// no newline found; keep the whole buffer as unprocessed
+	return p, rawLogs
 }
 
 func waitForPodRunning(c *kubernetes.Clientset, namespace string, labels map[string]string) (string, error) {
