@@ -1,0 +1,97 @@
+name: 'Deploy App'
+description: 'Deploy and verify a sample Kubernetes application'
+inputs:
+  app-name:
+    description: 'Name of the sample application to deploy (e.g., hello-world, wordpress)'
+    required: true
+  verify-health:
+    description: 'Perform additional health checks beyond kubectl wait'
+    required: false
+    default: 'false'
+  timeout:
+    description: 'Timeout for deployment readiness (seconds)'
+    required: false
+    default: '300'
+
+outputs:
+  deployment-status:
+    description: 'Status of the deployment (success/failed)'
+    value: ${{ steps.deploy.outputs.status }}
+  deployment-time:
+    description: 'Time taken to deploy (seconds)'
+    value: ${{ steps.deploy.outputs.duration }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Validate app exists
+      shell: bash
+      run: |
+        if [ ! -d "sample-resources/${{ inputs.app-name }}" ]; then
+          echo "❌ Error: Application '${{ inputs.app-name }}' not found"
+          exit 1
+        fi
+        if [ ! -f "sample-resources/${{ inputs.app-name }}/deploy.sh" ]; then
+          echo "❌ Error: deploy.sh not found for '${{ inputs.app-name }}'"
+          exit 1
+        fi
+        echo "✅ Application '${{ inputs.app-name }}' validated"
+
+    - name: Deploy application
+      id: deploy
+      shell: bash
+      run: |
+        START_TIME=$(date +%s)
+        echo "🚀 Deploying ${{ inputs.app-name }}..."
+        
+        if make resources-deploy ${{ inputs.app-name }}; then
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - START_TIME))
+          echo "status=success" >> $GITHUB_OUTPUT
+          echo "duration=$DURATION" >> $GITHUB_OUTPUT
+          echo "✅ Deployment completed in ${DURATION}s"
+        else
+          echo "status=failed" >> $GITHUB_OUTPUT
+          echo "❌ Deployment failed"
+          exit 1
+        fi
+
+    - name: Verify deployment health
+      if: inputs.verify-health == 'true'
+      shell: bash
+      run: |
+        echo "🔍 Verifying deployment health for ${{ inputs.app-name }}..."
+        
+        # Use the validate.sh script if it exists
+        if [ -f "sample-resources/${{ inputs.app-name }}/validate.sh" ]; then
+          echo "Running validate.sh for ${{ inputs.app-name }}..."
+          (cd "sample-resources/${{ inputs.app-name }}" && ./validate.sh)
+        else
+          echo "⚠️  No validate.sh found for ${{ inputs.app-name }}, performing basic checks..."
+          
+          # Fallback to basic checks
+          case "${{ inputs.app-name }}" in
+            hello-world)
+              kubectl get deployment apache-hello -o jsonpath='{.status.conditions[?(@.type=="Available")].status}' | grep -q "True" || exit 1
+              kubectl get service apache-hello-service || exit 1
+              echo "✅ hello-world basic checks passed"
+              ;;
+            wordpress)
+              kubectl get deployment wordpress-mysql -o jsonpath='{.status.conditions[?(@.type=="Available")].status}' | grep -q "True" || exit 1
+              kubectl get deployment wordpress -o jsonpath='{.status.conditions[?(@.type=="Available")].status}' | grep -q "True" || exit 1
+              echo "✅ wordpress basic checks passed"
+              ;;
+            *)
+              echo "⚠️  No validation available for ${{ inputs.app-name }}"
+              ;;
+          esac
+        fi
+
+    - name: Show deployment status
+      if: always()
+      shell: bash
+      run: |
+        echo "📊 Deployment Status Summary"
+        echo "============================"
+        kubectl get all -l app=${{ inputs.app-name }} || true
+        kubectl get all --all-namespaces | grep -i "${{ inputs.app-name }}" || true
