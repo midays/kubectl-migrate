@@ -83,6 +83,6 @@ If no `destroy.sh` exists, uses generic kubectl delete.
 ## Notes
 
 - **Always use `if: always()`** to ensure cleanup runs even if tests fail
-- The action **never fails** - errors are ignored to ensure workflow completes
+- The action ignores runtime errors to avoid failing the workflow, but invalid inputs (such as an invalid `app-name`) will still cause the action to exit with code 1
 - Use **after** the `deploy-sample-app` action
 - For local cleanup, use `make resources-destroy <app-name>` directly

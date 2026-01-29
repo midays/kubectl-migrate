@@ -13,10 +13,10 @@ runs:
       run: |
         APP_NAME="${{ inputs.app-name }}"
         
-        # Validate app-name contains only safe characters (alphanumeric, hyphens, underscores)
-        if [[ ! "$APP_NAME" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+        # Validate app-name: must start with alphanumeric, then allow alphanumeric, hyphens, underscores
+        if [[ ! "$APP_NAME" =~ ^[a-zA-Z0-9][a-zA-Z0-9_-]*$ ]]; then
           echo "❌ Error: Invalid app-name '$APP_NAME'"
-          echo "App name must contain only letters, numbers, hyphens, and underscores"
+          echo "App name must start with a letter or number, followed by letters, numbers, hyphens, or underscores"
           exit 1
         fi
         
