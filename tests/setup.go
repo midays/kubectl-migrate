@@ -1,6 +1,8 @@
 package tests
 
 import (
+    "os"
+    
     "github.com/konveyor-ecosystem/kubectl-migrate/tests/utils"
     . "github.com/onsi/ginkgo/v2"
     . "github.com/onsi/gomega"
@@ -18,6 +20,39 @@ func SetupClusters() {
     GinkgoWriter.Println("========================================")
     GinkgoWriter.Println("Setting up test clusters...")
     GinkgoWriter.Println("========================================")
+    
+    // Check if config.yaml exists before proceeding
+    configPaths := []string{
+        "tests/config.yaml",
+        "config.yaml",
+        "../config.yaml",
+    }
+    
+    configExists := false
+    for _, path := range configPaths {
+        if _, err := os.Stat(path); err == nil {
+            configExists = true
+            break
+        }
+    }
+    
+    if !configExists {
+        Skip(`
+===================================================================================
+SKIPPING E2E TESTS: config.yaml not found
+
+To run e2e tests, create tests/config.yaml from the template:
+  
+  cd tests
+  cp config.yaml.template config.yaml
+  
+Then edit config.yaml with your cluster contexts from 'kubectl config get-contexts'
+
+See tests/README.md for more information.
+===================================================================================
+`)
+        return
+    }
     
     // Load configuration
     GinkgoWriter.Println("\nLoading configuration from config.yaml...")
