@@ -26,8 +26,8 @@ var _ = Describe("Export Command Tests", func() {
         Expect(result.Success()).To(BeTrue())
         
         // Cleanup
-        // err = tests.SrcCluster.DeleteNamespace(testNs)
-        // Expect(err).NotTo(HaveOccurred())
+        err = tests.SrcCluster.DeleteNamespace(testNs)
+        Expect(err).NotTo(HaveOccurred())
         
         GinkgoWriter.Println("✓ Namespace deleted")
     })

@@ -2,6 +2,7 @@ package tests
 
 import (
     "os"
+    "strings"
     
     "github.com/konveyor-ecosystem/kubectl-migrate/tests/utils"
     . "github.com/onsi/ginkgo/v2"
@@ -21,22 +22,12 @@ func SetupClusters() {
     GinkgoWriter.Println("Setting up test clusters...")
     GinkgoWriter.Println("========================================")
     
-    // Check if config.yaml exists before proceeding
-    configPaths := []string{
-        "tests/config.yaml",
-        "config.yaml",
-        "../config.yaml",
-    }
+    // Load configuration
+    GinkgoWriter.Println("\nLoading configuration from config.yaml...")
+    config, err := utils.GetConfig()
     
-    configExists := false
-    for _, path := range configPaths {
-        if _, err := os.Stat(path); err == nil {
-            configExists = true
-            break
-        }
-    }
-    
-    if !configExists {
+    // If config file is missing, skip tests with helpful message
+    if err != nil && (os.IsNotExist(err) || strings.Contains(err.Error(), "no such file")) {
         Skip(`
 ===================================================================================
 SKIPPING E2E TESTS: config.yaml not found
@@ -54,9 +45,7 @@ See tests/README.md for more information.
         return
     }
     
-    // Load configuration
-    GinkgoWriter.Println("\nLoading configuration from config.yaml...")
-    config, err := utils.GetConfig()
+    // For other errors, fail normally
     Expect(err).NotTo(HaveOccurred(), "Failed to load config.yaml")
     GinkgoWriter.Println("✓ Configuration loaded")
     
