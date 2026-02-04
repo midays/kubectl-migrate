@@ -57,30 +57,6 @@ func (c *Cluster) DeleteNamespace(namespace string) error {
     return nil
 }
 
-// DeployApp deploys a simple test application to this cluster
-func (c *Cluster) DeployApp(namespace, appName string) error {
-    // Create deployment
-    result := c.RunKubectl("create", "deployment", appName,
-        "--image=nginx:latest",
-        "-n", namespace)
-    
-    if !result.Success() {
-        return fmt.Errorf("failed to create deployment in %s: %s", c.Name, result.Stderr)
-    }
-    
-    // Create service
-    result = c.RunKubectl("expose", "deployment", appName,
-        "--port=80",
-        "--target-port=80",
-        "-n", namespace)
-    
-    if !result.Success() {
-        return fmt.Errorf("failed to create service in %s: %s", c.Name, result.Stderr)
-    }
-    
-    return nil
-}
-
 // GetPods gets pods from a namespace in this cluster
 func (c *Cluster) GetPods(namespace string) CommandResult {
     return c.RunKubectl("get", "pods", "-n", namespace, "-o", "json")
@@ -89,14 +65,4 @@ func (c *Cluster) GetPods(namespace string) CommandResult {
 // String returns a string representation of the cluster
 func (c *Cluster) String() string {
     return fmt.Sprintf("%s - context: %s", c.Name, c.Context)
-}
-
-// Helper function to check if a string contains a substring
-func contains(s, substr string) bool {
-    for i := 0; i <= len(s)-len(substr); i++ {
-        if s[i:i+len(substr)] == substr {
-            return true
-        }
-    }
-    return false
 }
